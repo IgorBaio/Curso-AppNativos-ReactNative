@@ -11,10 +11,37 @@ import Pai from './components/direta/Pai'
 import PaiIndireta from './components/indireta/Pai'
 import ContadorV2 from './components/contador/ContadorV2'
 import Diferenciar from './components/Diferenciar'
+import ParImpar from './components/ParImpar'
+import Familia from './components/relacao/Familia'
+import Membro from './components/relacao/Membro'
+import UsuarioLogado from './components/UsuarioLogado'
+import ListaProdutos from './components/produtos/ListaProdutos'
+import ListaProdutosV2 from './components/produtos/ListaProdutosV2'
 
 export default () => (
     <SafeAreaView style={style.App}>
-        <Diferenciar />
+        <ListaProdutosV2 />
+        {/* <ListaProdutos /> */}
+        {/* <UsuarioLogado usuario={{nome:"Igor", email:"igorbaio@email.com"}}/>
+        <UsuarioLogado usuario={{nome:"Igor"}}/>
+        <UsuarioLogado usuario={{email:"igorbaio@email.com"}}/>
+        <UsuarioLogado usuario={null}/>
+        <UsuarioLogado usuario={{}}/>
+        <UsuarioLogado /> */}
+        {/* <Familia>
+            <Membro nome="Ana" sobrenome="Silva" />
+            <Membro nome="Júlia" sobrenome="Silva" />
+        </Familia>
+        <Familia>
+            <Membro nome="Bia" sobrenome="Arruda" />
+            <Membro nome="Carlos" sobrenome="Arruda" />
+            <Membro nome="Gui" sobrenome="Arruda" />
+            <Membro nome="Rebeca" sobrenome="Arruda" />
+        </Familia> */}
+        {/* <ParImpar num={3} />
+        <ParImpar num={4} />
+        <ParImpar num={3623} /> */}
+        {/* <Diferenciar /> */}
         {/* <ContadorV2 /> */}
         {/* <PaiIndireta /> */}
         {/* <Pai /> */}
