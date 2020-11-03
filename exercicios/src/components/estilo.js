@@ -21,6 +21,6 @@ export default StyleSheet.create({
     },
     displayText:{
         color:"#FFF"
-    }
+    },
 
 })
