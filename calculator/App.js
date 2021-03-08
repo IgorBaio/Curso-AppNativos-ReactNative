@@ -1,95 +1,135 @@
-import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { Component, useState } from "react";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import Button from "./src/components/Button";
 import Display from "./src/components/Display";
+import { configureSaveReducer } from "./src/store/configureStore";
 
 const initialState = {
     displayValue: "0",
     clearDisplay: false,
-    operation: null,
+    operation: '',
     values: [0, 0],
     current: 0,
 }
 
-export default class App extends Component {
-    state = {...initialState}
+export default () => {
+    const [displayValue, setDisplayValue] = useState(initialState.displayValue)
+    const [clearDisplay, setClearDisplay] = useState(initialState.clearDisplay)
+    const [operationState, setOperationState] = useState(initialState.operation)
+    const [values, setValues] = useState(initialState.values)
+    const [current, setCurrent] = useState(initialState.current)
+    // Alert.alert(state.displayValue.toString())
+    const dispatch = useDispatch()
+    const marked = useSelector(state => state.save.marked)
+    const store = configureSaveReducer()
+    const addDigit = (n) => {
+        console.debug(typeof displayValue)
+        console.debug(displayValue)
 
-    addDigit = (n) => {
-        console.debug(typeof this.state.displayValue)
-        
 
-        const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay
-        
-        if(n==='.' && !clearDisplay && this.state.displayValue.includes('.')){
-            return 
+        const clearDisplayConst = displayValue === '0' || clearDisplay || operationState === null
+
+        if (n === '.' && !clearDisplayConst && displayValue.includes('.')) {
+            return
         }
 
-        const currentValue = clearDisplay ? ''  : this.state.displayValue 
-        const displayValue = currentValue + n
-        this.setState({displayValue, clearDisplay:false})
+        const currentValue = clearDisplayConst !== undefined && clearDisplayConst !== null && clearDisplayConst !== false ? '' : displayValue
+        const displayValueConst = currentValue !== undefined && currentValue !== null ? currentValue + n : '' + n
+        console.log(displayValueConst)
+        setDisplayValue(displayValueConst)
+        setClearDisplay(false)
 
-        if(n!=='.'){
-            const newValue = parseFloat(displayValue)
-            const values = [...this.state.values]
-            values[this.state.current] = newValue
-            this.setState({values})
+        if (n !== '.') {
+            const newValue = parseFloat(displayValueConst)
+            const valuesConst = [...values]
+            valuesConst[current] = newValue
+            setValues(valuesConst)
         }
     }
 
-    clearMemory = () => {
-        this.setState({...initialState})
+    const clearMemory = () => {
+        setDisplayValue(initialState.displayValue)
+        setClearDisplay(initialState.clearDisplay)
+        setOperationState(initialState.operation)
+        setValues(initialState.values)
+        setCurrent(initialState.current)
+        dispatch({
+            type: 'marked',
+            marked: false,
+            markedLabel: ''
+        })
     }
 
-    setOperation = (operation) => {
-        if(this.state.current === 0){
-            this.setState({operation, current:1,clearDisplay:true})
-        }else{
-            const equals = operation === '='
-            const values = [...this.state.values]
-            try{
-                values[0] = eval(`${values[0]} ${this.state.operation} ${values[1]}`);
-
-            }catch(e){
-                values[0] = this.state.values[0]
-            }
-            values[1] = 0
-            this.setState({
-                displayValue: `${values[0]}`,
-                operation: equals ? null : operation,
-                current: equals ? 0 : 1,
-                clearDisplay: !equals,
-                values,
+    const setOperation = (operation) => {
+        if (current === 0) {
+            setOperationState(operation);
+            setCurrent(1);
+            setClearDisplay(true);
+            dispatch({
+                type: 'marked',
+                marked: true,
+                markedLabel: operation
             })
+        } else {
+            const equals = operation === '='
+            const valuesConst = [...values]
+            try {
+                valuesConst[0] = eval(`${valuesConst[0]} ${operationState} ${valuesConst[1]}`);
+
+            } catch (e) {
+                valuesConst[0] = values[0]
+            }
+            valuesConst[1] = 0
+            setDisplayValue(`${valuesConst[0]}`)
+            setOperationState(equals ? null : operation)
+            setCurrent(equals ? 0:1)
+            setClearDisplay(!equals)
+            setValues(valuesConst)
+            if(equals){
+                dispatch({
+                    type: 'marked',
+                    marked: false,
+                    markedLabel: ''
+                })    
+            }else{
+
+                dispatch({
+                    type: 'marked',
+                    marked: true,
+                    markedLabel: operation
+                })
+            }
         }
     }
 
-    render() {
-        return (
+    return (
+        <Provider store={store}>
             <View style={styles.container}>
-                <Display value={this.state.displayValue} />
+                <Display value={displayValue} />
                 <View style={styles.buttons}>
-                    <Button label='AC' triple onClick={this.clearMemory} />
-                    <Button label='/' operation onClick={this.setOperation} />
-                    <Button label='7' onClick={this.addDigit} />
-                    <Button label='8' onClick={this.addDigit} />
-                    <Button label='9' onClick={this.addDigit} />
-                    <Button label='+' operation onClick={this.setOperation} />
-                    <Button label='4' onClick={this.addDigit} />
-                    <Button label='5' onClick={this.addDigit} />
-                    <Button label='6' onClick={this.addDigit} />
-                    <Button label='-' operation onClick={this.setOperation} />
-                    <Button label='1' onClick={this.addDigit} />
-                    <Button label='2' onClick={this.addDigit} />
-                    <Button label='3' onClick={this.addDigit} />
-                    <Button label='*' operation onClick={this.setOperation} />
-                    <Button label='0' double onClick={this.addDigit} />
-                    <Button label='.' onClick={this.addDigit} />
-                    <Button label='=' operation onClick={this.setOperation} />
+                    <Button label='AC' triple onClick={clearMemory} />
+                    <Button label='/' operation onClick={setOperation} />
+                    <Button label='7' onClick={addDigit} />
+                    <Button label='8' onClick={addDigit} />
+                    <Button label='9' onClick={addDigit} />
+                    <Button label='+' operation onClick={setOperation} />
+                    <Button label='4' onClick={addDigit} />
+                    <Button label='5' onClick={addDigit} />
+                    <Button label='6' onClick={addDigit} />
+                    <Button label='-' operation onClick={setOperation} />
+                    <Button label='1' onClick={addDigit} />
+                    <Button label='2' onClick={addDigit} />
+                    <Button label='3' onClick={addDigit} />
+                    <Button label='*' operation onClick={setOperation} />
+                    <Button label='0' double onClick={addDigit} />
+                    <Button label='.' onClick={addDigit} />
+                    <Button label='=' operation onClick={setOperation} />
 
                 </View>
             </View>
-        )
-    }
+        </Provider >
+    )
 }
 
 const styles = StyleSheet.create({
