@@ -24,8 +24,8 @@ export default () => {
     const marked = useSelector(state => state.save.marked)
     const store = configureSaveReducer()
     const addDigit = (n) => {
-        console.debug(typeof displayValue)
-        console.debug(displayValue)
+        // console.debug(typeof displayValue)
+        // console.debug(displayValue)
 
 
         const clearDisplayConst = displayValue === '0' || clearDisplay || operationState === null
@@ -36,7 +36,7 @@ export default () => {
 
         const currentValue = clearDisplayConst !== undefined && clearDisplayConst !== null && clearDisplayConst !== false ? '' : displayValue
         const displayValueConst = currentValue !== undefined && currentValue !== null ? currentValue + n : '' + n
-        console.log(displayValueConst)
+        // console.log(displayValueConst)
         setDisplayValue(displayValueConst)
         setClearDisplay(false)
 
