@@ -6,6 +6,8 @@ import {
     TouchableWithoutFeedback as TWF,
     Alert
 } from "react-native"
+import { connect, useSelector } from "react-redux";
+import { addComment } from "../store/actions/posts";
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const styles = StyleSheet.create({
@@ -26,12 +28,28 @@ const styles = StyleSheet.create({
 
 })
 
-export default () => {
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddComment: payload => dispatch(addComment(payload))
+    }
+}
+
+const AddComment = ({onAddComment,postId}) => {
+    const name = useSelector(state => state.user.name)
     const [comment, setComment] = useState('')
     const [editMode, setEditMode] = useState(false)
     let commentArea = null
+    
     const handleAddComment = () => {
-        Alert.alert('Adicionado!', comment)
+        onAddComment({
+            postId,
+            comment:{ 
+                nickname: name,
+                comment
+            }
+        })
+        setComment('')
+        setEditMode(false)
     }
 
     if (editMode) {
@@ -63,3 +81,5 @@ export default () => {
         </View>
     )
 }
+
+export default connect(null,mapDispatchToProps)(AddComment)
